@@ -1,5 +1,7 @@
 [vue2.5 写 todolist 课程网址](https://www.imooc.com/learn/980)
 
+**也可以直接看我的代码，里面有非常详细的注解**
+
 课程分节介绍
 
 #### 2-1 如何使用 vue 模板

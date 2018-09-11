@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TodoList li标签拆成一个小组件进行管理</title>
+    <script src="./vue.js"></script>
+</head>
+
+<body>
+    <div id="root">
+        <div>
+            <input v-model="inputVale" />
+            <!-- 双向绑定，input的数据传到list里面去 -->
+            <button @click="handleSubmit">提交</button>
+        </div>
+        <ul>
+            <todo-item v-for="(item, index) of list" :key="index" :content="item" :index="index" @delete="handelDelete">
+                <!-- 向小组件传递了内容有：content index  -->
+                <!-- 使用属性content传入要显示的值 -->
+                <!-- 绑定delete事件和handelDelete函数 -->
+                <!-- 添加新的属性属性让内容和item对应起来 -->
+                <!-- @delete="handelDelete"监听子组件的delete的变化 -->
+
+            </todo-item>
+
+        </ul>
+    </div>
+
+    <script>
+        // Vue.component是vue的创建组件的方法
+        Vue.component('todo-item', {//Vue.component注册的是全局组件
+            props: ['content', 'index'],
+            //props数组可以接受外部父组件传进去了的属性，必须要在组件中注册
+            // : index= 父组件循环子组件的时候的下标，也就是说可以接受content也可以接受下标
+            template: '<li @click="handleClickDelete">{{content}}</li>',
+            //一旦外部改变，组件就可以直接使用新的数据，添加新的属性属性让内容和item对应起来
+            //模板属于todo-item,所以点击的时候触发的是todo-itemd的handleClickDelete事件
+
+            methods: {
+                handleClickDelete: function () {
+                    this.$emit('delete', this.index)
+                    //向外触发一个事件名字叫delete，事件对应的值是this.index也就是小组件的下标
+                    //然后父组件在创建子组件的时候就在监听delete事件，也就是子组件触发了delete事件
+                    //父组件一旦监听到子组件向外触发delete事件的时候，就会执行handelDelete方法
+                    //因为handelDelete方法写在父组件的模板里面 也就是vue实例的挂载点处。
+                    //所以handelDelete方法定义起来得放在父组件的methods里面
+                }
+            }
+        })//每个Vue组件都是一个vue的实例，所以实例的结构也可以用在组件里面，比如method
+        // 局部组件
+        // var TodoItem = {
+        //     template: '<li>item</li>'
+        // }//想在外部el: "#root"vue实例中去调用的话得在vue实例中声名
+
+        new Vue({//最外层的实例，父组件
+            // 指的是vue这个实例和id=root这个dom节点做绑定
+            el: "#root",//没有template的实例就会去找挂载点
+            //template: '',//挂载点下面的内容都是vue实例的内容来源
+            // components: {
+            // components对局部组件进行注册，才可以使用局部组件
+            //     'todo-item': TodoItem
+            // },
+            data: {
+                inputVale: 'hello',
+                list: [1]
+            },
+            methods: {
+                handleSubmit: function () {
+                    this.list.push(this.inputVale)//用v-model双向绑定了input框里面输入的值
+                    this.inputVale = ''//此处可以在接受相应的输入值之后再清空数值
+                },
+                handelDelete: function (index) {
+                    this.list.splice(index, 1)//删除对应子组件下标的数据，todo-item检测到之后也会把对应的list中的东西删掉
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

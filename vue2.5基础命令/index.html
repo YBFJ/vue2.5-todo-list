@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Vue2.5</title>
+    <script src="./vue.js"></script>
+</head>
+
+<body>
+    <!-- 挂载点，模板，实例之间的关系-->
+    <!--切记所有的元素都必须得放在挂载点下面，如果不放在挂载点下面，就不会被vue渲染出来！！！-->
+    <div id="root">//div是挂载点，挂载点里面的内容都是模板,也可以写在vue实例里面的template
+        <h1>hello {{msg}}</h1>//双括号这种叫插值表达式，也可以用v-text绑定
+        <div v-on:click="handleClick">{{content}}</div>
+        <!-- v-on:=@ 是一个模板指令其实就是可以写在标签里面的指令，可以bang'd -->
+        <div v-bind:title="title">hello CMJ</div>
+        <!-- v-bind:=:单向属性绑定，属性绑定，绑定的title是vue实例里面的title，也就是说当前title和数据项做一个绑定 -->
+        <!-- 加了模板指令之后等号跟的内容不再是一个字符串了，是一个JS表达式了 -->
+        <!-- 单向绑定：数据决定页面表现，页面无法决定数据 -->
+        <h1 v-text="number"></h1>
+        <!-- v-text会转义，v-html不会进行转义，也就是输出本身的标签不，转义就输出，不转义就不输出 -->
+        <input :value="content" />
+        <!-- 此处开始双向绑定, input框变了，显示的也会变 -->
+        <input v-model="content" />
+        <div>{{content}}</div>
+        </br>
+
+        姓<input v-model="firstname" /> 名
+        <input v-model="lastname" />
+        <div>{{firstname}}{{lastname}}</div>
+        <div>{{fullname}}</div>
+        <!-- fullname 通过计算属性（相加）得到 -->
+        <div>{{count}}</div>
+        <div>{{content}}</div>
+        <div v-if="show">hello DK</div>
+        <!-- 此处v-show可以代替v-if，但是v-show表现的时候这个并没有从dom树上面清除，只是加上了display = none；v-if就是直接删除了 -->
+        <button @click="secondClick">toggle</button>
+        <ul>
+            <li v-for="item of list" :key="item">{{item}}</li>
+            <!-- 用v-for加上key可以增加效率，Key要求每项的值都是不同的 -->
+            <li v-for="(item, index) of list" :key="index">{{item}}</li>
+            <!-- 用v-for加上key可以增加效率，Key要求每项的值都是不同的,如果item不太一样就用index作为key值 -->
+            <!-- 但是如果列表要持续进行变更比如排序什么的最好不要用index作为key值 -->
+        </ul>
+    </div>
+
+    <script>
+        new Vue({
+            el: "#root",
+            template: '',//vue自动结合模板和数据生成内容
+            data: {
+                // 可以配置任意的数据名字
+                msg: " world!",
+                number: 123,
+                content: "this is content",
+                title: "this msg come from cmj",
+                firstname: '',
+                lastname: '',
+                count: 0,
+                show: false,//v-show的话并不会将节点从主干上删除，在渲染的时候.v-if控制dom的存在与否
+                list: [1, 2, 3],
+            },
+            computed: {
+                // computed表示一个属性由其他属性计算而来，只有依赖的属性发生变化才会重新计算
+                fullname: function () {
+                    return this.firstname + this.lastname
+                    //把属性进行计算，只有依赖属性的发生变化才会计算，否则利用缓存，使得可以将两部分进行拼接
+                }
+            },
+            watch: {//监听某个数据发生改变，就在侦听器质性
+                //firstname: function () {
+                //    this.count ++
+                //},
+                //lastname: function () {
+                //  this.count ++
+                //}//改成fullname可以一举两得
+                fullname: function () {
+                    // 侦听的是fullname
+                    this.count++
+                    // 因为在同一个vue实例可以直接用this
+
+                }
+            },
+            methods: {
+                handleClick: function () {
+
+                    this.content = "world"//点击之后改变显示的数据内容，this指的就是vue实例，现在就是面向数据编程了，不是面向dom编程
+                },
+                secondClick: function () {
+                    this.show = !this.show;
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
